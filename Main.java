@@ -1,70 +1,57 @@
-package ccs217_6.ex3;
+package ccs217_6.ex2;
 
-interface WeatherData {
-    String getCity();
-    double getTemperature();
-    String getDescription();
+interface Pizza {
+    double getCost();
 }
 
-class ExternalWeatherData1 {
-    private String location;
-    private double temp;
-    private String desc;
-
-    public ExternalWeatherData1(String location, double temp, String desc) {
-        this.location = location;
-        this.temp = temp;
-        this.desc = desc;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public double getTemp() {
-        return temp;
-    }
-
-    public String getDesc() {
-        return desc;
+class BasicPizza implements Pizza {
+    @Override
+    public double getCost() {
+        return 5.0;
     }
 }
 
-class ExternalWeatherData1Adapter implements WeatherData {
-    private ExternalWeatherData1 externalData1;
+abstract class PizzaDecorator implements Pizza {
+    protected Pizza pizza;
 
-    public ExternalWeatherData1Adapter(ExternalWeatherData1 externalData1) {
-        this.externalData1 = externalData1;
+    public PizzaDecorator(Pizza pizza) {
+        this.pizza = pizza;
     }
 
     @Override
-    public String getCity() {
-        return externalData1.getLocation();
+    public double getCost() {
+        return pizza.getCost();
+    }
+}
+
+class PepperoniTopping extends PizzaDecorator {
+    public PepperoniTopping(Pizza pizza) {
+        super(pizza);
     }
 
     @Override
-    public double getTemperature() {
-        return externalData1.getTemp();
+    public double getCost() {
+        return super.getCost() + 2.0;
+    }
+}
+
+class MushroomTopping extends PizzaDecorator {
+    public MushroomTopping(Pizza pizza) {
+        super(pizza);
     }
 
     @Override
-    public String getDescription() {
-        return externalData1.getDesc();
+    public double getCost() {
+        return super.getCost() + 1.5;
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        ExternalWeatherData1 externalData1 = new ExternalWeatherData1("New York", 25.5, "Sunny");
-        WeatherData adapter1 = new ExternalWeatherData1Adapter(externalData1);
-        displayWeatherInfo(adapter1);
-    }
+        Pizza basicPizza = new BasicPizza();
+        Pizza pepperoniPizza = new PepperoniTopping(basicPizza);
+        Pizza deluxePizza = new MushroomTopping(pepperoniPizza);
 
-    public static void displayWeatherInfo(WeatherData weatherData) {
-        System.out.println("City: " + weatherData.getCity());
-        System.out.println("Temperature: " + weatherData.getTemperature() + "°C");
-        System.out.println("Description: " + weatherData.getDescription());
-        System.out.println();
+        System.out.println("Final cost of the Deluxe Pizza: $" + deluxePizza.getCost());
     }
 }
-
